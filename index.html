@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -26,11 +25,35 @@
             font-size: 0.9em;
             color: #777;
         }
+        .chatbox {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #ffffff;
+            border: 2px solid #20B2AA;
+            border-radius: 10px;
+        }
+        .chatbox textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+        .chatbox button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #20B2AA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>Welkom op mijn NICE website</h1>
+        <h1>Welkom op mijn simpele website</h1>
     </header>
 
     <section>
@@ -40,7 +63,13 @@
 
     <section>
         <h2>Contact</h2>
-        <p>Neem contact met mij op via <a href="mailto:sterkensflynn@gmail.com">e-mail</a>.</p>
+        <p>Neem contact met mij op via <a href="mailto:voorbeeld@email.com">e-mail</a>.</p>
+    </section>
+
+    <section class="chatbox">
+        <h2>Laat een bericht achter</h2>
+        <textarea placeholder="Schrijf hier je bericht..."></textarea><br>
+        <button type="button">Verstuur</button>
     </section>
 
     <footer>

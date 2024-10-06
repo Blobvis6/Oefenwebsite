@@ -41,9 +41,13 @@
             }
         }
 
-        function drawCar() {
-            ctx.fillStyle = '#0095DD';
+        'blue';
             ctx.fillRect(car.x, car.y, car.width, car.height);
+            const carImg = new Image();
+            carImg.src = 'https://example.com/blue_car.png';
+            carImg.onload = function() {
+                ctx.drawImage(carImg, car.x, car.y, car.width, car.height);
+            };
         }
 
         function drawObstacles() {

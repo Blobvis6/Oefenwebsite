@@ -5,7 +5,7 @@
   <script>
     const SUPABASE_URL = 'https://salgbiaxedpstvsvgawc.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhbGdiaWF4ZWRwc3R2c3ZnYXdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgyMjQ4OTcsImV4cCI6MjA0MzgwMDg5N30.BEydxbu2_RTyMZiQzawrEpY-u2yRShsMkQP83Kwhhqk';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   </script>
 
     <meta charset="UTF-8">
@@ -77,6 +77,18 @@
     <script>
         document.addEventListener('DOMContentLoaded', async (event) => {
             const messagesContainer = document.querySelector('.messages');
+            
+            // Realtime updates voor nieuwe berichten
+            supabase
+                .from('messages')
+                .on('INSERT', payload => {
+                    const newMessage = document.createElement('div');
+                    newMessage.classList.add('message');
+                    newMessage.textContent = `${payload.new.text} - ${payload.new.timestamp}`;
+                    messagesContainer.appendChild(newMessage);
+                })
+                .subscribe();
+            const messagesContainer = document.querySelector('.messages');
 
             // Haal berichten op uit Supabase
             let { data: messages, error } = await supabase
@@ -126,16 +138,9 @@
                 // Clear de textarea
                 textarea.value = "";
             }
-          supabase
-    .from('messages')
-    .on('INSERT', payload => {
-        const messagesContainer = document.querySelector('.messages');
-        const newMessage = document.createElement('div');
-        newMessage.classList.add('message');
-        newMessage.textContent = `${payload.new.text} - ${payload.new.timestamp}`;
-        messagesContainer.appendChild(newMessage);
-    })
-    .subscribe();
+        }
+            }
+          
 
         }
     </script>

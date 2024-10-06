@@ -1,342 +1,102 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script>
-    const SUPABASE_URL = 'https://salgbiaxedpstvsvgawc.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhbGdiaWF4ZWRwc3R2c3ZnYXdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgyMjQ4OTcsImV4cCI6MjA0MzgwMDg5N30.BEydxbu2_RTyMZiQzawrEpY-u2yRShsMkQP83Kwhhqk';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simpele Website</title>
+    <title>Slangenspel</title>
     <style>
         body {
-            font-family: 'Verdana', sans-serif;
-            background-color: #000;
-            color: #333;
-            text-align: center;
-            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
         }
-        header {
-            background-color: #20B2AA;
-            padding: 20px;
-            color: white;
-        }
-        section {
-            margin: 20px 0;
-        }
-        footer {
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #777;
-        }
-        .chatbox {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #ffffff;
-            border: 2px solid #20B2AA;
-            border-radius: 10px;
-        }
-        .chatbox textarea {
-            width: 100%;
-            height: 60px;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            resize: none;
-        }
-        .chatbox button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #20B2AA;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .messages {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #e0f7fa;
-            border-radius: 10px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: left;
-        }
-        .message {
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #ffffff;
-            border: 1px solid #20B2AA;
-            border-radius: 5px;
-        }
-        .fly-image {
-            margin: 20px 0;
-            max-width: 100%;
-            height: auto;
+        canvas {
+            border: 2px solid black;
         }
     </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', async (event) => {
-            
-            
-            // Realtime updates voor nieuwe berichten
-            supabase
-                .from('messages')
-                .on('INSERT', payload => {
-                    const newMessage = document.createElement('div');
-                    newMessage.classList.add('message');
-                    newMessage.textContent = `${payload.new.text} - ${payload.new.timestamp}`;
-                    messagesContainer.appendChild(newMessage);
-                })
-                .subscribe();
-            const messagesContainer = document.querySelector('.messages');
-
-            // Haal berichten op uit Supabase
-            let { data: messages, error } = await supabase
-                .from('messages')
-                .select('*')
-                .order('timestamp', { ascending: true });
-
-            if (error) {
-                console.error('Fout bij ophalen van berichten: ', error);
-                return;
-            }
-
-            // Toon opgehaalde berichten
-            messages.forEach(message => {
-                const newMessage = document.createElement('div');
-                newMessage.classList.add('message');
-                newMessage.textContent = `${message.text} - ${message.timestamp}`;
-                messagesContainer.appendChild(newMessage);
-            });
-        });
-
-        async function addMessage() {
-            const textarea = document.querySelector('.chatbox textarea');
-            const messageText = textarea.value.trim();
-            if (messageText !== "") {
-                const timestamp = new Date().toLocaleString();
-
-                // Voeg het bericht toe aan Supabase
-                let { data, error } = await supabase
-                    .from('messages')
-                    .insert([
-                        { text: messageText, timestamp: timestamp }
-                    ]);
-
-                if (error) {
-                    console.error("Fout bij opslaan van bericht: ", error);
-                    return;
-                }
-
-                // Voeg het bericht toe aan de UI
-                const messagesContainer = document.querySelector('.messages');
-                const newMessage = document.createElement('div');
-                newMessage.classList.add('message');
-                newMessage.textContent = `${messageText} - ${timestamp}`;
-                messagesContainer.appendChild(newMessage);
-
-                // Clear de textarea
-                textarea.value = "";
-            }
-        }
 </head>
 <body>
-    <header>
-        <h1>Welkom op mijn simpele website</h1>
-    </header>
-
-    <section>
-        <h2>Over mij</h2>
-        <p>Hallo! Dit is een eenvoudige website gemaakt met HTML en CSS. Hier kun je informatie vinden over mij en mijn interesses.</p>
-    </section>
-
-    <section>
-        <h2>Contact</h2>
-        <p>Neem contact met mij op via <a href="mailto:voorbeeld@email.com">e-mail</a>.</p>
-    </section>
-
-    <section>
-        <h2>Afbeelding van een vlieg</h2>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Housefly_%28Musca_domestica%29.jpg/800px-Housefly_%28Musca_domestica%29.jpg" alt="Afbeelding van een vlieg" class="fly-image">
-    </section>
-
-    <section class="chatbox">
-        <h2>Laat een bericht achter</h2>
-        <textarea placeholder="Schrijf hier je bericht..."></textarea><br>
-        <button type="button" onclick="addMessage()">Verstuur</button>
-    </section>
-
-    <section>
-        <h2>Speel een Snake Game!</h2>
-        <canvas id="snakeCanvas" width="400" height="400" style="border:1px solid #000000;"></canvas>
-        <script>
-            const snakeCanvas = document.getElementById('snakeCanvas');
-            const snakeCtx = snakeCanvas.getContext('2d');
-            const box = 20;
-            let snake = [];
-            snake[0] = { x: 9 * box, y: 10 * box };
-            let direction = "";
-            let food = {
-                x: Math.floor(Math.random() * 19 + 1) * box,
-                y: Math.floor(Math.random() * 19 + 1) * box
-            };
-
-            document.addEventListener("keydown", changeDirection);
-
-            function changeDirection(event) {
-                if (event.keyCode === 37 && direction !== "RIGHT") {
-                    direction = "LEFT";
-                } else if (event.keyCode === 38 && direction !== "DOWN") {
-                    direction = "UP";
-                } else if (event.keyCode === 39 && direction !== "LEFT") {
-                    direction = "RIGHT";
-                } else if (event.keyCode === 40 && direction !== "UP") {
-                    direction = "DOWN";
-                }
-            }
-
-            function draw() {
-                snakeCtx.fillStyle = "#f0f0f0";
-                snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
-
-                for (let i = 0; i < snake.length; i++) {
-                    snakeCtx.fillStyle = (i === 0) ? "#0095DD" : "#00b300";
-                    snakeCtx.fillRect(snake[i].x, snake[i].y, box, box);
-                }
-
-                snakeCtx.fillStyle = "red";
-                snakeCtx.fillRect(food.x, food.y, box, box);
-
-                let snakeX = snake[0].x;
-                let snakeY = snake[0].y;
-
-                if (direction === "LEFT") snakeX -= box;
-                if (direction === "UP") snakeY -= box;
-                if (direction === "RIGHT") snakeX += box;
-                if (direction === "DOWN") snakeY += box;
-
-                if (snakeX === food.x && snakeY === food.y) {
-                    food = {
-                        x: Math.floor(Math.random() * 19 + 1) * box,
-                        y: Math.floor(Math.random() * 19 + 1) * box
-                    };
-                } else {
-                    snake.pop();
-                }
-
-                let newHead = {
-                    x: snakeX,
-                    y: snakeY
-                };
-
-                if (snakeX < 0 || snakeX >= snakeCanvas.width || snakeY < 0 || snakeY >= snakeCanvas.height || collision(newHead, snake)) {
-                    clearInterval(game);
-                }
-
-                snake.unshift(newHead);
-            }
-
-            function collision(head, array) {
-                for (let i = 0; i < array.length; i++) {
-                    if (head.x === array[i].x && head.y === array[i].y) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            let game = setInterval(draw, 100);
-        </script>
-    </section>
-
-<footer>
-        <p>&copy; 2024 Simpele Website. Alle rechten voorbehouden.</p>
-    </footer>
-
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
     <script>
-        // Sluit de addMessage functie correct af
-        async function addMessage() {
-            const textarea = document.querySelector('.chatbox textarea');
-            const messageText = textarea.value.trim();
-            if (messageText !== "") {
-                const timestamp = new Date().toLocaleString();
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-                // Voeg het bericht toe aan Supabase
-                let { data, error } = await supabase
-                    .from('messages')
-                    .insert([
-                        { text: messageText, timestamp: timestamp }
-                    ]);
+        const boxSize = 20;
+        let snake = [{ x: 200, y: 200 }];
+        let direction = 'RIGHT';
+        let food = { x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize, y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize };
 
-                if (error) {
-                    console.error("Fout bij opslaan van bericht: ", error);
-                    return;
-                }
+        document.addEventListener('keydown', changeDirection);
 
-                // Voeg het bericht toe aan de UI
-                const messagesContainer = document.querySelector('.messages');
-                const newMessage = document.createElement('div');
-                newMessage.classList.add('message');
-                newMessage.textContent = `${messageText} - ${timestamp}`;
-                messagesContainer.appendChild(newMessage);
-
-                // Clear de textarea
-                textarea.value = "";
+        function changeDirection(event) {
+            if (event.key === 'ArrowUp' && direction !== 'DOWN') {
+                direction = 'UP';
+            } else if (event.key === 'ArrowDown' && direction !== 'UP') {
+                direction = 'DOWN';
+            } else if (event.key === 'ArrowLeft' && direction !== 'RIGHT') {
+                direction = 'LEFT';
+            } else if (event.key === 'ArrowRight' && direction !== 'LEFT') {
+                direction = 'RIGHT';
             }
         }
+
+        function drawSnake() {
+            snake.forEach(part => {
+                ctx.fillStyle = '#0095DD';
+                ctx.fillRect(part.x, part.y, boxSize, boxSize);
+                ctx.strokeStyle = 'white';
+                ctx.strokeRect(part.x, part.y, boxSize, boxSize);
+            });
+        }
+
+        function drawFood() {
+            ctx.fillStyle = 'red';
+            ctx.fillRect(food.x, food.y, boxSize, boxSize);
+        }
+
+        function updateSnake() {
+            const head = { x: snake[0].x, y: snake[0].y };
+
+            if (direction === 'UP') head.y -= boxSize;
+            if (direction === 'DOWN') head.y += boxSize;
+            if (direction === 'LEFT') head.x -= boxSize;
+            if (direction === 'RIGHT') head.x += boxSize;
+
+            snake.unshift(head);
+
+            // Check if snake eats food
+            if (head.x === food.x && head.y === food.y) {
+                food = { x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize, y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize };
+            } else {
+                snake.pop();
+            }
+
+            // Check for collisions
+            if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height || snakeCollision(head)) {
+                clearInterval(game);
+                alert('Game Over');
+            }
+        }
+
+        function snakeCollision(head) {
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawFood();
+            drawSnake();
+            updateSnake();
+        }
+
+        const game = setInterval(draw, 100);
     </script>
-    </section>
-
-    <section class="messages">
-        <h2>Berichten</h2>
-    </section>
-
-    <footer>
-        <p>&copy; 2024 Simpele Website. Alle rechten voorbehouden.</p>
-    </footer>
-
-    <section>
-        <h2>Speel een Game!</h2>
-        <canvas id="gameCanvas" width="400" height="400" style="border:1px solid #000000;"></canvas>
-        <script>
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
-            let x = canvas.width / 2;
-            let y = canvas.height - 30;
-            let dx = 2;
-            let dy = -2;
-            const ballRadius = 10;
-
-            function drawBall() {
-                ctx.beginPath();
-                ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-                ctx.fillStyle = "#0095DD";
-                ctx.fill();
-                ctx.closePath();
-            }
-
-            function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                drawBall();
-
-                if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-                    dx = -dx;
-                }
-                if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
-                    dy = -dy;
-                }
-
-                x += dx;
-                y += dy;
-            }
-
-            setInterval(draw, 10);
-        </script>
-    </section>
 </body>
 </html>

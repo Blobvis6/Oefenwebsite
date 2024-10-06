@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const SUPABASE_URL = 'https://salgbiaxedpstvsvgawc.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhbGdiaWF4ZWRwc3R2c3ZnYXdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgyMjQ4OTcsImV4cCI6MjA0MzgwMDg5N30.BEydxbu2_RTyMZiQzawrEpY-u2yRShsMkQP83Kwhhqk';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simpele Website</title>
@@ -68,36 +75,68 @@
         }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            if (localStorage.getItem('messages')) {
-                const messagesContainer = document.querySelector('.messages');
-                const messages = JSON.parse(localStorage.getItem('messages'));
-                messages.forEach(message => {
-                    const newMessage = document.createElement('div');
-                    newMessage.classList.add('message');
-                    newMessage.textContent = `${message.text} - ${message.timestamp}`;
-                    messagesContainer.appendChild(newMessage);
-                });
+        document.addEventListener('DOMContentLoaded', async (event) => {
+            const messagesContainer = document.querySelector('.messages');
+
+            // Haal berichten op uit Supabase
+            let { data: messages, error } = await supabase
+                .from('messages')
+                .select('*')
+                .order('timestamp', { ascending: true });
+
+            if (error) {
+                console.error('Fout bij ophalen van berichten: ', error);
+                return;
             }
+
+            // Toon opgehaalde berichten
+            messages.forEach(message => {
+                const newMessage = document.createElement('div');
+                newMessage.classList.add('message');
+                newMessage.textContent = `${message.text} - ${message.timestamp}`;
+                messagesContainer.appendChild(newMessage);
+            });
         });
 
-        function addMessage() {
+        async function addMessage() {
             const textarea = document.querySelector('.chatbox textarea');
             const messageText = textarea.value.trim();
             if (messageText !== "") {
+                const timestamp = new Date().toLocaleString();
+
+                // Voeg het bericht toe aan Supabase
+                let { data, error } = await supabase
+                    .from('messages')
+                    .insert([
+                        { text: messageText, timestamp: timestamp }
+                    ]);
+
+                if (error) {
+                    console.error("Fout bij opslaan van bericht: ", error);
+                    return;
+                }
+
+                // Voeg het bericht toe aan de UI
                 const messagesContainer = document.querySelector('.messages');
                 const newMessage = document.createElement('div');
                 newMessage.classList.add('message');
-                const timestamp = new Date().toLocaleString();
                 newMessage.textContent = `${messageText} - ${timestamp}`;
                 messagesContainer.appendChild(newMessage);
 
-                const messages = localStorage.getItem('messages') ? JSON.parse(localStorage.getItem('messages')) : [];
-                messages.push({ text: messageText, timestamp: timestamp });
-                localStorage.setItem('messages', JSON.stringify(messages));
-
+                // Clear de textarea
                 textarea.value = "";
             }
+          supabase
+    .from('messages')
+    .on('INSERT', payload => {
+        const messagesContainer = document.querySelector('.messages');
+        const newMessage = document.createElement('div');
+        newMessage.classList.add('message');
+        newMessage.textContent = `${payload.new.text} - ${payload.new.timestamp}`;
+        messagesContainer.appendChild(newMessage);
+    })
+    .subscribe();
+
         }
     </script>
 </head>

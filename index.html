@@ -68,6 +68,19 @@
         }
     </style>
     <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            if (localStorage.getItem('messages')) {
+                const messagesContainer = document.querySelector('.messages');
+                const messages = JSON.parse(localStorage.getItem('messages'));
+                messages.forEach(message => {
+                    const newMessage = document.createElement('div');
+                    newMessage.classList.add('message');
+                    newMessage.textContent = `${message.text} - ${message.timestamp}`;
+                    messagesContainer.appendChild(newMessage);
+                });
+            }
+        });
+
         function addMessage() {
             const textarea = document.querySelector('.chatbox textarea');
             const messageText = textarea.value.trim();
@@ -75,8 +88,14 @@
                 const messagesContainer = document.querySelector('.messages');
                 const newMessage = document.createElement('div');
                 newMessage.classList.add('message');
-                newMessage.textContent = messageText;
+                const timestamp = new Date().toLocaleString();
+                newMessage.textContent = `${messageText} - ${timestamp}`;
                 messagesContainer.appendChild(newMessage);
+
+                const messages = localStorage.getItem('messages') ? JSON.parse(localStorage.getItem('messages')) : [];
+                messages.push({ text: messageText, timestamp: timestamp });
+                localStorage.setItem('messages', JSON.stringify(messages));
+
                 textarea.value = "";
             }
         }

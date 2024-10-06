@@ -167,5 +167,47 @@
     <footer>
         <p>&copy; 2024 Simpele Website. Alle rechten voorbehouden.</p>
     </footer>
+
+    <script>
+        // Sluit de addMessage functie correct af
+        async function addMessage() {
+            const textarea = document.querySelector('.chatbox textarea');
+            const messageText = textarea.value.trim();
+            if (messageText !== "") {
+                const timestamp = new Date().toLocaleString();
+
+                // Voeg het bericht toe aan Supabase
+                let { data, error } = await supabase
+                    .from('messages')
+                    .insert([
+                        { text: messageText, timestamp: timestamp }
+                    ]);
+
+                if (error) {
+                    console.error("Fout bij opslaan van bericht: ", error);
+                    return;
+                }
+
+                // Voeg het bericht toe aan de UI
+                const messagesContainer = document.querySelector('.messages');
+                const newMessage = document.createElement('div');
+                newMessage.classList.add('message');
+                newMessage.textContent = `${messageText} - ${timestamp}`;
+                messagesContainer.appendChild(newMessage);
+
+                // Clear de textarea
+                textarea.value = "";
+            }
+        }
+    </script>
+    </section>
+
+    <section class="messages">
+        <h2>Berichten</h2>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Simpele Website. Alle rechten voorbehouden.</p>
+    </footer>
 </body>
 </html>
